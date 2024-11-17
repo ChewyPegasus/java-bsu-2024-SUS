@@ -11,6 +11,8 @@ repositories {
 
 dependencies {
     implementation("org.reflections:reflections:0.10.2")
+    implementation("org.slf4j:slf4j-api:2.0.0")
+    implementation("ch.qos.logback:logback-classic:1.4.12")
 
     compileOnly("org.projectlombok:lombok:1.18.34")
 

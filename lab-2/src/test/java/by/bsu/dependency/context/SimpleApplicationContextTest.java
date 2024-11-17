@@ -1,22 +1,24 @@
 package by.bsu.dependency.context;
 
+import by.bsu.dependency.example.BeeBean;
 import by.bsu.dependency.example.FirstBean;
 import by.bsu.dependency.example.OtherBean;
+
 import by.bsu.dependency.exception.ApplicationContextNotStartedException;
 import by.bsu.dependency.exception.NoSuchBeanDefinitionException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class HardCodedSingletonApplicationContextTest {
-
+public class SimpleApplicationContextTest {
     private ApplicationContext applicationContext;
 
     @BeforeEach
     void init() {
-        applicationContext = new HardCodedSingletonApplicationContext(FirstBean.class, OtherBean.class);
+        applicationContext = new SimpleApplicationContext(FirstBean.class, OtherBean.class, BeeBean.class);
     }
 
     @Test
@@ -32,6 +34,10 @@ class HardCodedSingletonApplicationContextTest {
                 ApplicationContextNotStartedException.class,
                 () -> applicationContext.containsBean("firstBean")
         );
+        assertThrows(
+                ApplicationContextNotStartedException.class,
+                () -> applicationContext.containsBean("beeBean")
+        );
     }
 
     @Test
@@ -40,6 +46,7 @@ class HardCodedSingletonApplicationContextTest {
 
         assertThat(applicationContext.containsBean("firstBean")).isTrue();
         assertThat(applicationContext.containsBean("otherBean")).isTrue();
+        assertThat(applicationContext.containsBean("beeBean")).isTrue();
         assertThat(applicationContext.containsBean("randomName")).isFalse();
     }
 
@@ -49,6 +56,10 @@ class HardCodedSingletonApplicationContextTest {
                 ApplicationContextNotStartedException.class,
                 () -> applicationContext.getBean("firstBean")
         );
+        assertThrows(
+                ApplicationContextNotStartedException.class,
+                () -> applicationContext.getBean("beeBean")
+        );
     }
 
     @Test
@@ -57,6 +68,7 @@ class HardCodedSingletonApplicationContextTest {
 
         assertThat(applicationContext.getBean("firstBean")).isNotNull().isInstanceOf(FirstBean.class);
         assertThat(applicationContext.getBean("otherBean")).isNotNull().isInstanceOf(OtherBean.class);
+        assertThat(applicationContext.getBean("beeBean")).isNotNull().isInstanceOf(BeeBean.class);
     }
 
     @Test
@@ -67,12 +79,17 @@ class HardCodedSingletonApplicationContextTest {
                 NoSuchBeanDefinitionException.class,
                 () -> applicationContext.getBean("randomName")
         );
+        assertThrows(
+                NoSuchBeanDefinitionException.class,
+                () -> applicationContext.getBean("GOOOOOOOOL")
+        );
     }
 
     @Test
     void testIsSingletonReturns() {
         assertThat(applicationContext.isSingleton("firstBean")).isTrue();
         assertThat(applicationContext.isSingleton("otherBean")).isTrue();
+        assertThat(applicationContext.isSingleton("beeBean")).isFalse();
     }
 
     @Test
@@ -81,12 +98,17 @@ class HardCodedSingletonApplicationContextTest {
                 NoSuchBeanDefinitionException.class,
                 () -> applicationContext.isSingleton("randomName")
         );
+        assertThrows(
+                NoSuchBeanDefinitionException.class,
+                () -> applicationContext.isSingleton("GOOOOOOL")
+        );
     }
 
     @Test
     void testIsPrototypeReturns() {
         assertThat(applicationContext.isPrototype("firstBean")).isFalse();
         assertThat(applicationContext.isPrototype("otherBean")).isFalse();
+        assertThat(applicationContext.isPrototype("beeBean")).isTrue();
     }
 
     @Test
@@ -94,6 +116,10 @@ class HardCodedSingletonApplicationContextTest {
         assertThrows(
                 NoSuchBeanDefinitionException.class,
                 () -> applicationContext.isPrototype("randomName")
+        );
+        assertThrows(
+                NoSuchBeanDefinitionException.class,
+                () -> applicationContext.isPrototype("GOOOOL")
         );
     }
 }
